@@ -283,6 +283,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         LinearLayout homescreen = findViewById(R.id.HomeScreen);
+        homescreen.setAlpha(0.85f); // Set 15% opacity for wallpaper visibility
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
 
         // Create container for clock and battery
@@ -310,7 +311,7 @@ public class MainActivity extends AppCompatActivity {
         // Date display
         TextView dateView = new TextView(this);
         dateView.setTextColor(getColorFromAttr(androidx.appcompat.R.attr.colorPrimary));
-        dateView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);
+        dateView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 20); // Increased by 125% from 16
         dateView.setTypeface(Typeface.create("sans-serif-light", Typeface.NORMAL));
         dateView.setIncludeFontPadding(false);
 
