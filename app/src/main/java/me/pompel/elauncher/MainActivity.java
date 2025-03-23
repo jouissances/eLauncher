@@ -44,6 +44,10 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.os.Handler;
+import android.os.BatteryManager;
+import android.content.IntentFilter;
+import android.content.Intent;
+import android.view.Gravity;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -279,27 +283,71 @@ public class MainActivity extends AppCompatActivity {
         LinearLayout homescreen = findViewById(R.id.HomeScreen);
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         
-        // Add date and time display
-        TextView dateTimeView = new TextView(this);
-        dateTimeView.setTextColor(getColorFromAttr(androidx.appcompat.R.attr.colorPrimary));
-        dateTimeView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 24);
-        dateTimeView.setTypeface(Typeface.create("sans-serif-light", Typeface.NORMAL));
-        dateTimeView.setPadding(0, 50, 0, 50);
-        dateTimeView.setLayoutParams(params);
+        // Create container for clock and battery
+        LinearLayout topContainer = new LinearLayout(this);
+        topContainer.setLayoutParams(new LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT, 
+            LinearLayout.LayoutParams.WRAP_CONTENT));
+        topContainer.setOrientation(LinearLayout.HORIZONTAL);
+        topContainer.setPadding(40, 50, 40, 20);
+
+        // Create container for time and date
+        LinearLayout timeContainer = new LinearLayout(this);
+        timeContainer.setLayoutParams(new LinearLayout.LayoutParams(
+            0, LinearLayout.LayoutParams.WRAP_CONTENT, 1.0f));
+        timeContainer.setOrientation(LinearLayout.VERTICAL);
+
+        // Time display
+        TextView timeView = new TextView(this);
+        timeView.setTextColor(getColorFromAttr(androidx.appcompat.R.attr.colorPrimary));
+        timeView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 48);
+        timeView.setTypeface(Typeface.create("sans-serif-light", Typeface.NORMAL));
+        timeView.setIncludeFontPadding(false);
+
+        // Date display
+        TextView dateView = new TextView(this);
+        dateView.setTextColor(getColorFromAttr(androidx.appcompat.R.attr.colorPrimary));
+        dateView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);
+        dateView.setTypeface(Typeface.create("sans-serif-light", Typeface.NORMAL));
+        dateView.setIncludeFontPadding(false);
+
+        // Battery display
+        TextView batteryView = new TextView(this);
+        batteryView.setTextColor(getColorFromAttr(androidx.appcompat.R.attr.colorPrimary));
+        batteryView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);
+        batteryView.setTypeface(Typeface.create("sans-serif-light", Typeface.NORMAL));
+        batteryView.setGravity(Gravity.END);
+        batteryView.setLayoutParams(new LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.WRAP_CONTENT, 
+            LinearLayout.LayoutParams.WRAP_CONTENT));
         
-        // Update time every minute
+        // Update time and battery every minute
         Handler handler = new Handler();
         Runnable timeUpdater = new Runnable() {
             @Override
             public void run() {
-                SimpleDateFormat sdf = new SimpleDateFormat("EEE, MMM d • h:mm a", Locale.getDefault());
-                dateTimeView.setText(sdf.format(new Date()));
+                SimpleDateFormat timeSdf = new SimpleDateFormat("h:mm a", Locale.getDefault());
+                SimpleDateFormat dateSdf = new SimpleDateFormat("EEE, MMM d", Locale.getDefault());
+                timeView.setText(timeSdf.format(new Date()));
+                dateView.setText(dateSdf.format(new Date()));
+                
+                // Update battery
+                IntentFilter ifilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
+                Intent batteryStatus = registerReceiver(null, ifilter);
+                int level = batteryStatus.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
+                batteryView.setText(level + "%");
+                
                 handler.postDelayed(this, 60000); // Update every minute
             }
         };
         timeUpdater.run();
         
-        homescreen.addView(dateTimeView, 0);
+        // Add views to containers
+        timeContainer.addView(timeView);
+        timeContainer.addView(dateView);
+        topContainer.addView(timeContainer);
+        topContainer.addView(batteryView);
+        homescreen.addView(topContainer, 0);
         CharSequence[] alertApps = appNames.toArray(new CharSequence[0]);
         int i = 0;
         for (i = 0; i < prefs.getInt(NUMBER_OF_APPS, 8); i++) {
