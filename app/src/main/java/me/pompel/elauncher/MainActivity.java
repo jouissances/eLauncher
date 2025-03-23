@@ -292,14 +292,14 @@ public class MainActivity extends AppCompatActivity {
             LinearLayout.LayoutParams.MATCH_PARENT, 
             LinearLayout.LayoutParams.WRAP_CONTENT));
         topContainer.setOrientation(LinearLayout.HORIZONTAL);
-        topContainer.setPadding(40, 50, 40, 20);
+        topContainer.setPadding(40, 10, 40, 20);
 
         // Create container for time and date
         LinearLayout timeContainer = new LinearLayout(this);
         timeContainer.setOrientation(LinearLayout.VERTICAL);
         timeContainer.setLayoutParams(new LinearLayout.LayoutParams(
             0, LinearLayout.LayoutParams.WRAP_CONTENT, 1.0f));
-        timeContainer.setPadding(0, 0, 0, 40); // Add bottom padding
+        timeContainer.setPadding(0, 0, 0, 0);
 
         // Time display
         TextView timeView = new TextView(this);
