@@ -305,14 +305,14 @@ public class MainActivity extends AppCompatActivity {
         TextView timeView = new TextView(this);
         timeView.setTextColor(getColorFromAttr(androidx.appcompat.R.attr.colorPrimary));
         timeView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 48);
-        timeView.setTypeface(Typeface.create("sans-serif-light", Typeface.NORMAL));
+        timeView.setTypeface(Typeface.create("sans-serif", Typeface.NORMAL));
         timeView.setIncludeFontPadding(false);
 
         // Date display
         TextView dateView = new TextView(this);
         dateView.setTextColor(getColorFromAttr(androidx.appcompat.R.attr.colorPrimary));
         dateView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 20); // Increased by 125% from 16
-        dateView.setTypeface(Typeface.create("sans-serif-light", Typeface.NORMAL));
+        dateView.setTypeface(Typeface.create("sans-serif", Typeface.NORMAL));
         dateView.setIncludeFontPadding(false);
 
         // Battery display container
@@ -325,11 +325,12 @@ public class MainActivity extends AppCompatActivity {
         TextView batteryIcon = new TextView(this);
         batteryIcon.setTextColor(getColorFromAttr(androidx.appcompat.R.attr.colorPrimary));
         batteryIcon.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);
+        batteryIcon.setTypeface(Typeface.create("sans-serif", Typeface.NORMAL));
 
         TextView batteryView = new TextView(this);
         batteryView.setTextColor(getColorFromAttr(androidx.appcompat.R.attr.colorPrimary));
         batteryView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);
-        batteryView.setTypeface(Typeface.create("sans-serif-light", Typeface.NORMAL));
+        batteryView.setTypeface(Typeface.create("sans-serif", Typeface.NORMAL));
 
         batteryContainer.addView(batteryIcon);
         batteryContainer.addView(batteryView);
