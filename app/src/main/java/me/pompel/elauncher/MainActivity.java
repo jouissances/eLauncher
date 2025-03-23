@@ -60,6 +60,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import android.os.Looper;
+import android.content.BroadcastReceiver;
 
 public class MainActivity extends AppCompatActivity {
     private static final String NUMBER_OF_APPS = "number_of_apps_preference";
@@ -99,7 +101,7 @@ public class MainActivity extends AppCompatActivity {
         long currentTime = System.currentTimeMillis();
         if (currentTime - 100 < keyboardActionTime) return;
         keyboardActionTime = currentTime;
-        
+
         InputMethodManager inputManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         if (hide) {
             search.clearFocus();
@@ -282,7 +284,7 @@ public class MainActivity extends AppCompatActivity {
 
         LinearLayout homescreen = findViewById(R.id.HomeScreen);
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        
+
         // Create container for clock and battery
         LinearLayout topContainer = new LinearLayout(this);
         topContainer.setLayoutParams(new LinearLayout.LayoutParams(
@@ -293,9 +295,10 @@ public class MainActivity extends AppCompatActivity {
 
         // Create container for time and date
         LinearLayout timeContainer = new LinearLayout(this);
+        timeContainer.setOrientation(LinearLayout.VERTICAL);
         timeContainer.setLayoutParams(new LinearLayout.LayoutParams(
             0, LinearLayout.LayoutParams.WRAP_CONTENT, 1.0f));
-        timeContainer.setOrientation(LinearLayout.VERTICAL);
+        timeContainer.setPadding(0, 0, 0, 40); // Add bottom padding
 
         // Time display
         TextView timeView = new TextView(this);
@@ -317,24 +320,24 @@ public class MainActivity extends AppCompatActivity {
             LinearLayout.LayoutParams.WRAP_CONTENT, 
             LinearLayout.LayoutParams.WRAP_CONTENT));
         batteryContainer.setGravity(Gravity.END | Gravity.CENTER_VERTICAL);
-        
+
         TextView batteryIcon = new TextView(this);
         batteryIcon.setTextColor(getColorFromAttr(androidx.appcompat.R.attr.colorPrimary));
         batteryIcon.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);
         batteryIcon.setText("⚡"); // Battery icon
-        
+
         TextView batteryView = new TextView(this);
         batteryView.setTextColor(getColorFromAttr(androidx.appcompat.R.attr.colorPrimary));
         batteryView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);
         batteryView.setTypeface(Typeface.create("sans-serif-light", Typeface.NORMAL));
-        
+
         batteryContainer.addView(batteryIcon);
         batteryContainer.addView(batteryView);
-        
+
         // Cache date formatters for better performance
         final SimpleDateFormat timeSdf = new SimpleDateFormat("h:mm a", Locale.getDefault());
         final SimpleDateFormat dateSdf = new SimpleDateFormat("EEE, MMM d", Locale.getDefault());
-        
+
         // Register battery receiver to only update when battery changes
         IntentFilter batteryFilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
         registerReceiver(new BroadcastReceiver() {
@@ -344,7 +347,7 @@ public class MainActivity extends AppCompatActivity {
                 batteryView.setText(level + "%");
             }
         }, batteryFilter);
-        
+
         // Update time every minute
         Handler handler = new Handler(Looper.getMainLooper());
         Runnable timeUpdater = new Runnable() {
@@ -357,7 +360,7 @@ public class MainActivity extends AppCompatActivity {
             }
         };
         timeUpdater.run();
-        
+
         // Add views to containers
         timeContainer.addView(timeView);
         timeContainer.addView(dateView);
