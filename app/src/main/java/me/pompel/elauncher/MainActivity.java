@@ -311,32 +311,48 @@ public class MainActivity extends AppCompatActivity {
         dateView.setTypeface(Typeface.create("sans-serif-light", Typeface.NORMAL));
         dateView.setIncludeFontPadding(false);
 
-        // Battery display
+        // Battery display container
+        LinearLayout batteryContainer = new LinearLayout(this);
+        batteryContainer.setLayoutParams(new LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.WRAP_CONTENT, 
+            LinearLayout.LayoutParams.WRAP_CONTENT));
+        batteryContainer.setGravity(Gravity.END | Gravity.CENTER_VERTICAL);
+        
+        TextView batteryIcon = new TextView(this);
+        batteryIcon.setTextColor(getColorFromAttr(androidx.appcompat.R.attr.colorPrimary));
+        batteryIcon.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);
+        batteryIcon.setText("⚡"); // Battery icon
+        
         TextView batteryView = new TextView(this);
         batteryView.setTextColor(getColorFromAttr(androidx.appcompat.R.attr.colorPrimary));
         batteryView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);
         batteryView.setTypeface(Typeface.create("sans-serif-light", Typeface.NORMAL));
-        batteryView.setGravity(Gravity.END);
-        batteryView.setLayoutParams(new LinearLayout.LayoutParams(
-            LinearLayout.LayoutParams.WRAP_CONTENT, 
-            LinearLayout.LayoutParams.WRAP_CONTENT));
         
-        // Update time and battery every minute
-        Handler handler = new Handler();
+        batteryContainer.addView(batteryIcon);
+        batteryContainer.addView(batteryView);
+        
+        // Cache date formatters for better performance
+        final SimpleDateFormat timeSdf = new SimpleDateFormat("h:mm a", Locale.getDefault());
+        final SimpleDateFormat dateSdf = new SimpleDateFormat("EEE, MMM d", Locale.getDefault());
+        
+        // Register battery receiver to only update when battery changes
+        IntentFilter batteryFilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
+        registerReceiver(new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                int level = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
+                batteryView.setText(level + "%");
+            }
+        }, batteryFilter);
+        
+        // Update time every minute
+        Handler handler = new Handler(Looper.getMainLooper());
         Runnable timeUpdater = new Runnable() {
             @Override
             public void run() {
-                SimpleDateFormat timeSdf = new SimpleDateFormat("h:mm a", Locale.getDefault());
-                SimpleDateFormat dateSdf = new SimpleDateFormat("EEE, MMM d", Locale.getDefault());
-                timeView.setText(timeSdf.format(new Date()));
-                dateView.setText(dateSdf.format(new Date()));
-                
-                // Update battery
-                IntentFilter ifilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
-                Intent batteryStatus = registerReceiver(null, ifilter);
-                int level = batteryStatus.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
-                batteryView.setText(level + "%");
-                
+                Date now = new Date();
+                timeView.setText(timeSdf.format(now));
+                dateView.setText(dateSdf.format(now));
                 handler.postDelayed(this, 60000); // Update every minute
             }
         };
@@ -346,7 +362,7 @@ public class MainActivity extends AppCompatActivity {
         timeContainer.addView(timeView);
         timeContainer.addView(dateView);
         topContainer.addView(timeContainer);
-        topContainer.addView(batteryView);
+        topContainer.addView(batteryContainer);
         homescreen.addView(topContainer, 0);
         CharSequence[] alertApps = appNames.toArray(new CharSequence[0]);
         int i = 0;
