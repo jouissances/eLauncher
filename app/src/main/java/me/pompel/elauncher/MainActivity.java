@@ -292,7 +292,7 @@ public class MainActivity extends AppCompatActivity {
             LinearLayout.LayoutParams.MATCH_PARENT, 
             LinearLayout.LayoutParams.WRAP_CONTENT));
         topContainer.setOrientation(LinearLayout.HORIZONTAL);
-        topContainer.setPadding(40, 10, 40, 20);
+        topContainer.setPadding(40, 30, 40, 10); // Increased top padding, decreased bottom
 
         // Create container for time and date
         LinearLayout timeContainer = new LinearLayout(this);
@@ -325,7 +325,6 @@ public class MainActivity extends AppCompatActivity {
         TextView batteryIcon = new TextView(this);
         batteryIcon.setTextColor(getColorFromAttr(androidx.appcompat.R.attr.colorPrimary));
         batteryIcon.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);
-        batteryIcon.setText("⚡"); // Battery icon
 
         TextView batteryView = new TextView(this);
         batteryView.setTextColor(getColorFromAttr(androidx.appcompat.R.attr.colorPrimary));
@@ -335,19 +334,22 @@ public class MainActivity extends AppCompatActivity {
         batteryContainer.addView(batteryIcon);
         batteryContainer.addView(batteryView);
 
-        // Cache date formatters for better performance
-        final SimpleDateFormat timeSdf = new SimpleDateFormat("HH:mm", Locale.getDefault());
-        final SimpleDateFormat dateSdf = new SimpleDateFormat("EEE, MMM d", Locale.getDefault());
-
-        // Register battery receiver to only update when battery changes
+        // Update battery icon based on level
+        String[] batteryIcons = {"🔋", "🪫"};
         IntentFilter batteryFilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
         registerReceiver(new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
                 int level = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
-                batteryView.setText(level + "%");
+                batteryView.setText(" " + level + "%");
+                batteryIcon.setText(level > 20 ? batteryIcons[0] : batteryIcons[1]);
             }
         }, batteryFilter);
+
+        // Cache date formatters for better performance
+        final SimpleDateFormat timeSdf = new SimpleDateFormat("HH:mm", Locale.getDefault());
+        final SimpleDateFormat dateSdf = new SimpleDateFormat("EEE, MMM d", Locale.getDefault());
+
 
         // Update time every minute
         Handler handler = new Handler(Looper.getMainLooper());
