@@ -336,7 +336,7 @@ public class MainActivity extends AppCompatActivity {
         batteryContainer.addView(batteryView);
 
         // Cache date formatters for better performance
-        final SimpleDateFormat timeSdf = new SimpleDateFormat("h:mm a", Locale.getDefault());
+        final SimpleDateFormat timeSdf = new SimpleDateFormat("HH:mm", Locale.getDefault());
         final SimpleDateFormat dateSdf = new SimpleDateFormat("EEE, MMM d", Locale.getDefault());
 
         // Register battery receiver to only update when battery changes
